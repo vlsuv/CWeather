@@ -16,7 +16,6 @@ enum APIResult<T>  {
 }
 
 protocol APIManager {
-    
     var sessionConfiguration: URLSessionConfiguration { get }
     var session: URLSession { get }
     
@@ -25,7 +24,6 @@ protocol APIManager {
 }
 
 extension APIManager {
-    
     func fetchJSONWith(request: URLRequest, completionHandler: @escaping JSONCompletionHandler) -> URLSessionDataTask? {
         let dataTask = session.dataTask(with: request) { data, responce, error in
             guard let HTTPResponce = responce as? HTTPURLResponse else {

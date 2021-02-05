@@ -52,19 +52,25 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="j2x-Fr-kWH">
+                                <rect key="frame" x="197" y="438" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Y59-tK-R9x" secondAttribute="trailing" constant="30" id="0kN-FS-rNs"/>
                             <constraint firstItem="Y59-tK-R9x" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="30" id="4TL-FI-a4B"/>
+                            <constraint firstItem="j2x-Fr-kWH" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="7WG-VW-sJY"/>
                             <constraint firstItem="cnD-aT-SJJ" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="30" id="L2N-2t-GLo"/>
                             <constraint firstItem="Y59-tK-R9x" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="40" id="dx3-Xd-zI4"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="cnD-aT-SJJ" secondAttribute="bottom" constant="40" id="jBi-Wr-lpE"/>
+                            <constraint firstItem="j2x-Fr-kWH" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="nWd-5g-6o6"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="cnD-aT-SJJ" secondAttribute="trailing" constant="210" id="qlj-i3-FPV"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="j2x-Fr-kWH" id="rFp-c6-6kg"/>
                         <outlet property="descriptionLabel" destination="Um0-r1-WCs" id="boS-tM-qyv"/>
                         <outlet property="feelLikeLabel" destination="pPg-BT-Waq" id="j7p-ss-MMC"/>
                         <outlet property="locationNameLabel" destination="cnD-aT-SJJ" id="oCQ-RH-2Qi"/>

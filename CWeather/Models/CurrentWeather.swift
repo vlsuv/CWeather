@@ -18,7 +18,6 @@ struct CurrentWeather {
 }
 
 extension CurrentWeather {
-    
     init?(json: [String: AnyObject]) {
         guard let mainDictionary = json["main"] as? [String: AnyObject], let weatherDictionaries = json["weather"] as? [[String: AnyObject]], let firstWeatherDictionary = weatherDictionaries.first else { return nil }
         
@@ -31,7 +30,6 @@ extension CurrentWeather {
 }
 
 extension CurrentWeather {
-    
     var tempString: String {
         return "\(temp)°"
     }
