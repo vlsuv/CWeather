@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreLocation
 
 class CurrentWeatherController: UIViewController {
     
@@ -19,18 +20,30 @@ class CurrentWeatherController: UIViewController {
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     private let weatherAPIManager = WeatherAPIManager(apiKey: "d4778fc83753819972da2707d8ade3d1")
+    let locationManager = LocationManager()
     
     // MARK: - Init
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchWeatherData()
+        fetchLocationName()
     }
     
     // MARK: - Handlers
-    private func fetchWeatherData() {
+    private func fetchLocationName() {
         toogleActivityIndicatorStatus(isOn: true)
         
-        weatherAPIManager.JSONWeatherWith(locationName: "samara") { [weak self] APIResult in
+        self.locationManager.fetchLocationName { [weak self] LocationResult in
+            switch LocationResult {
+            case .Succes(let locationName):
+                self?.fetchWeatherData(locationName: locationName)
+            case .Failure(let error as NSError):
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func fetchWeatherData(locationName: String) {
+        weatherAPIManager.JSONWeatherWith(locationName: locationName) { [weak self] APIResult in
             switch APIResult {
             case .Succes(let currentWeather):
                 DispatchQueue.main.async {
@@ -42,7 +55,10 @@ class CurrentWeatherController: UIViewController {
             }
         }
     }
-    
+}
+
+// MARK: - UserInterface
+extension CurrentWeatherController {
     private func updateUIWith(_ currentWeather: CurrentWeather) {
         tempLabel.text = currentWeather.tempString
         feelLikeLabel.text = currentWeather.feelsLikeString
