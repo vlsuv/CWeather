@@ -18,17 +18,27 @@ class CurrentWeatherController: UIViewController {
     @IBOutlet weak var weatherImageView: UIImageView!
     @IBOutlet weak var locationNameLabel: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    private var bacgroundGradientLayer: CAGradientLayer!
     
     private let weatherAPIManager = WeatherAPIManager(apiKey: "d4778fc83753819972da2707d8ade3d1")
-    let locationManager = LocationManager()
+    private let locationManager = LocationManager()
     
     // MARK: - Init
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureNavigationController()
+        setupBacgroundGradientLayer()
+        setupTheme()
+        
         fetchLocationName()
     }
     
-    // MARK: - Handlers
+    // MARK: - Actions
+    @IBAction func handleRefresh(_ sender: UIBarButtonItem) {
+        fetchWeatherData(locationName: "Moscow")
+    }
+    
+    // MARK: - Fetches
     private func fetchLocationName() {
         toogleActivityIndicatorStatus(isOn: true)
         
@@ -59,19 +69,59 @@ class CurrentWeatherController: UIViewController {
 
 // MARK: - UserInterface
 extension CurrentWeatherController {
+    private func configureNavigationController() {
+        navigationController?.toTransparent()
+    }
+    
+    private func setupTheme() {
+        tempLabel.textColor = Colors.white
+        tempLabel.font = .systemFont(ofSize: 76, weight: .medium)
+        
+        feelLikeLabel.textColor = Colors.white
+        feelLikeLabel.font = .systemFont(ofSize: 18, weight: .medium)
+        
+        descriptionLabel.textColor = Colors.white
+        descriptionLabel.font = .systemFont(ofSize: 18, weight: .medium)
+        
+        locationNameLabel.textColor = Colors.white
+        locationNameLabel.font = .systemFont(ofSize: 46, weight: .medium)
+        
+        activityIndicator.color = Colors.white
+    }
+    
+    private func setupBacgroundGradientLayer() {
+        bacgroundGradientLayer = CAGradientLayer()
+        bacgroundGradientLayer.colors = [AssetsColor.darkBlue.cgColor, AssetsColor.mediumBlue.cgColor]
+        bacgroundGradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        bacgroundGradientLayer.endPoint = CGPoint(x: 0, y: 1)
+        bacgroundGradientLayer.frame = view.bounds
+        view.layer.insertSublayer(bacgroundGradientLayer, at: 0)
+    }
+    
     private func updateUIWith(_ currentWeather: CurrentWeather) {
         tempLabel.text = currentWeather.tempString
         feelLikeLabel.text = currentWeather.feelsLikeString
         descriptionLabel.text = currentWeather.description
         weatherImageView.image = currentWeather.icon
         locationNameLabel.text = currentWeather.locationName
+        weatherImageView.image = currentWeather.icon
+    }
+    
+    private func hideElements(isOn: Bool) {
+        tempLabel.isHidden = isOn
+        feelLikeLabel.isHidden = isOn
+        descriptionLabel.isHidden = isOn
+        weatherImageView.isHidden = isOn
+        locationNameLabel.isHidden = isOn
     }
     
     private func toogleActivityIndicatorStatus(isOn: Bool) {
         activityIndicator.isHidden = !isOn
+        hideElements(isOn: isOn)
         
         switch isOn {
         case true:
+            
             activityIndicator.startAnimating()
         case false:
             activityIndicator.stopAnimating()

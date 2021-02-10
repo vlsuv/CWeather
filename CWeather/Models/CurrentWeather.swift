@@ -21,9 +21,11 @@ extension CurrentWeather {
     init?(json: [String: AnyObject]) {
         guard let mainDictionary = json["main"] as? [String: AnyObject], let weatherDictionaries = json["weather"] as? [[String: AnyObject]], let firstWeatherDictionary = weatherDictionaries.first else { return nil }
         
+        let icon = WeatherImageManager(rawValue: firstWeatherDictionary["main"] as? String ?? "").icon
+        
         self.locationName = json["name"] as? String ?? ""
         self.description = firstWeatherDictionary["description"] as? String ?? ""
-        self.icon = UIImage()
+        self.icon = icon
         self.temp = mainDictionary["temp"] as? Double ?? 0.0
         self.feelsLike = mainDictionary["feels_like"] as? Double ?? 0.0
     }
