@@ -102,9 +102,8 @@ extension CurrentWeatherController {
         tempLabel.text = currentWeather.tempString
         feelLikeLabel.text = currentWeather.feelsLikeString
         descriptionLabel.text = currentWeather.description
-        weatherImageView.image = currentWeather.icon
+        weatherImageView.image = currentWeather.icon.getImage()
         locationNameLabel.text = currentWeather.locationName
-        weatherImageView.image = currentWeather.icon
     }
     
     private func hideElements(isOn: Bool) {
