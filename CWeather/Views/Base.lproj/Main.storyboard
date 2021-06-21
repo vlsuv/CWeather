@@ -114,9 +114,15 @@
                         <rightBarButtonItems>
                             <barButtonItem title="Item" image="text.justify" catalog="system" id="HmL-EW-cQe">
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <connections>
+                                    <action selector="didTapLocationListButton:" destination="BYZ-38-t0r" id="EJd-h6-6YH"/>
+                                </connections>
                             </barButtonItem>
                             <barButtonItem systemItem="add" id="1ps-co-SS5">
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <connections>
+                                    <action selector="didTapAddLocationButton:" destination="BYZ-38-t0r" id="6cI-pO-tji"/>
+                                </connections>
                             </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
@@ -135,6 +141,36 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1050.7246376811595" y="126.5625"/>
+        </scene>
+        <!--Location List Controller-->
+        <scene sceneID="4Ji-TV-XTk">
+            <objects>
+                <viewController storyboardIdentifier="locationListController" id="li1-lU-3b1" customClass="LocationListController" customModule="CWeather" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="qpN-WG-XdV">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="7NU-Lu-gWv">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="7NU-Lu-gWv" firstAttribute="trailing" secondItem="H4y-8k-5mp" secondAttribute="trailing" id="0wR-9A-qf6"/>
+                            <constraint firstItem="7NU-Lu-gWv" firstAttribute="top" secondItem="H4y-8k-5mp" secondAttribute="top" constant="-44" id="Smq-ac-4ub"/>
+                            <constraint firstItem="7NU-Lu-gWv" firstAttribute="leading" secondItem="H4y-8k-5mp" secondAttribute="leading" id="t1a-Vg-D28"/>
+                            <constraint firstAttribute="bottom" secondItem="7NU-Lu-gWv" secondAttribute="bottom" id="uzF-ZH-Fw1"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="H4y-8k-5mp"/>
+                    </view>
+                    <connections>
+                        <outlet property="tableView" destination="7NU-Lu-gWv" id="yMY-LH-ugl"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ILC-as-ewi" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1931.8840579710147" y="117.85714285714285"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="H05-Xd-Szb">

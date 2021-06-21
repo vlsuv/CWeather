@@ -24,6 +24,7 @@ class CurrentWeatherController: UIViewController {
     private let weatherAPIManager = WeatherAPIManager(apiKey: "d4778fc83753819972da2707d8ade3d1")
     
     private var locationManager: LocationManagerProtocol?
+    private var realmManager: RealmManager?
     
     @IBOutlet weak var searchLocationView: UIView!
     @IBOutlet weak var searchLocationTextField: UITextField!
@@ -41,6 +42,8 @@ class CurrentWeatherController: UIViewController {
         
         setupLocationManager()
         fetchLocationName()
+        
+        realmManager = RealmManager()
     }
     
     // MARK: - Actions
@@ -62,6 +65,29 @@ class CurrentWeatherController: UIViewController {
         fetchWeatherData(locationName: location)
     }
     
+    @IBAction func didTapAddLocationButton(_ sender: Any) {
+        guard let currentLocationName = currentLocationName else { return }
+        
+        realmManager?.addLocation(name: currentLocationName, completionHandler: { [weak self] succes in
+            if succes {
+                self?.showAlertController(title: "Add Location", message: "")
+            }
+        })
+    }
+    
+    @IBAction func didTapLocationListButton(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let locationListController = storyboard.instantiateViewController(identifier: "locationListController") as? LocationListController else { return }
+        
+        navigationController?.pushViewController(locationListController, animated: true)
+        locationListController.didSelectLocation = didSelectLocation(_:)
+    }
+    
+    func didSelectLocation(_ name: String) {
+        navigationController?.popViewController(animated: true)
+        fetchWeatherData(locationName: name)
+    }
+    
     // MARK: - Setups
     private func setupLocationManager() {
         locationManager = LocationManager()
@@ -71,7 +97,7 @@ class CurrentWeatherController: UIViewController {
             case .Succes(let locationName):
                 self?.fetchWeatherData(locationName: locationName)
             case .Failure(let error):
-                print(error)
+                self?.showAlertController(title: error.localizedDescription, message: "")
             }
         }
     }
@@ -89,9 +115,10 @@ class CurrentWeatherController: UIViewController {
                 DispatchQueue.main.async {
                     self?.toogleActivityIndicatorStatus(isOn: false)
                     self?.updateUIWith(currentWeather)
+                    self?.currentLocationName = currentWeather.locationName
                 }
             case .Failure(let error as NSError):
-                self?.showErrorAlert(title: error.localizedDescription, message: nil)
+                self?.showAlertController(title: error.localizedDescription, message: nil)
             }
         }
     }

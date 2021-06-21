@@ -9,7 +9,7 @@
 import UIKit
 
 struct CurrentWeather: Equatable, Codable {
-    
+
     let locationName: String
     let description: String
     var icon: Image
