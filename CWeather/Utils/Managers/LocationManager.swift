@@ -9,66 +9,86 @@
 import Foundation
 import CoreLocation
 
-enum LocationResult<T> {
+enum LocationResult {
     case Succes(String)
     case Failure(Error)
 }
 
-class LocationManager: NSObject {
+protocol LocationManagerProtocol {
+    var didUpdateLocation: ((LocationResult) -> ())? { get set }
+    func fetchLocation()
+}
+
+class LocationManager: NSObject, LocationManagerProtocol {
     
-    private let manager = CLLocationManager()
+    // MARK: - Properties
+    private let manager: CLLocationManager
     
+    var didUpdateLocation: ((LocationResult) -> ())?
+    
+    // MARK: - Init
+    override init() {
+        self.manager = CLLocationManager()
+        super.init()
+    }
+}
+
+// MARK: - Location Manage
+extension LocationManager {
     private func setupLocationManager() {
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBest
     }
     
-    private func fetchLocation(completionHandler: (CLLocation?, Error?) -> ()) {
+    func fetchLocation() {
         guard CLLocationManager.locationServicesEnabled() else {
-            completionHandler(nil, ErrorManager.LocationServicesError)
+            self.didUpdateLocation?(.Failure(ErrorManager.LocationServicesError))
             return
         }
         setupLocationManager()
         
-        guard CLLocationManager.authorizationStatus() == .authorizedWhenInUse else {
-            completionHandler(nil, ErrorManager.AuthorizationStatusError)
-            return
+        switch CLLocationManager.authorizationStatus() {
+        case .notDetermined:
+            manager.requestWhenInUseAuthorization()
+        case .restricted:
+            self.didUpdateLocation?(.Failure(ErrorManager.AuthorizationStatusError))
+        case .denied:
+            self.didUpdateLocation?(.Failure(ErrorManager.AuthorizationStatusError))
+        case .authorizedAlways:
+            manager.startUpdatingLocation()
+        case .authorizedWhenInUse:
+            manager.startUpdatingLocation()
+        @unknown default:
+            self.didUpdateLocation?(.Failure(ErrorManager.AuthorizationStatusError))
         }
-        
-        let currentLocation = manager.location
-        completionHandler(currentLocation, nil)
     }
     
-    func fetchLocationName(completionHandler: @escaping (LocationResult<String>) -> ()) {
-        fetchLocation { location, error in
-            DispatchQueue.global().async {
-                if let error = error {
-                    completionHandler(.Failure(error))
-                    return
-                }
-                
-                guard let location = location else {
-                    completionHandler(.Failure(ErrorManager.MissingLocationCordinateError))
-                    return
-                }
-                
-                let geocoder = CLGeocoder()
-                geocoder.reverseGeocodeLocation(location) { placemark, error in
-                    if let error = error {
-                        completionHandler(.Failure(error))
-                        return
-                    }
-                    
-                    guard let placemark = placemark?.first, let locationName = placemark.locality else {
-                        return
-                    }
-                    
-                    completionHandler(.Succes(locationName))
-                }
+    func getLocationName(with location: CLLocation) {
+        let geocoder = CLGeocoder()
+        
+        geocoder.reverseGeocodeLocation(location) { [weak self] placemark, error in
+            if let error = error {
+                self?.didUpdateLocation?(.Failure(error))
+                return
             }
+            
+            guard let placemark = placemark?.first, let locationName = placemark.locality else {
+                self?.didUpdateLocation?(.Failure(ErrorManager.MissingLocationCordinateError))
+                return
+            }
+            
+            self?.didUpdateLocation?(.Succes(locationName))
         }
     }
 }
 
+// MARK: - CLLocationManagerDelegate
 extension LocationManager: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.first else { return }
+        
+        manager.stopUpdatingLocation()
+        
+        getLocationName(with: location)
+    }
 }

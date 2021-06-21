@@ -18,38 +18,68 @@ class CurrentWeatherController: UIViewController {
     @IBOutlet weak var weatherImageView: UIImageView!
     @IBOutlet weak var locationNameLabel: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
     private var bacgroundGradientLayer: CAGradientLayer!
     
     private let weatherAPIManager = WeatherAPIManager(apiKey: "d4778fc83753819972da2707d8ade3d1")
-    private let locationManager = LocationManager()
+    
+    private var locationManager: LocationManagerProtocol?
+    
+    @IBOutlet weak var searchLocationView: UIView!
+    @IBOutlet weak var searchLocationTextField: UITextField!
+    @IBOutlet weak var searchLocationButton: UIButton!
+    
+    private var currentLocationName: String?
     
     // MARK: - Init
     override func viewDidLoad() {
         super.viewDidLoad()
         configureNavigationController()
+        setupSearchLocationView()
         setupBacgroundGradientLayer()
         setupTheme()
         
+        setupLocationManager()
         fetchLocationName()
     }
     
     // MARK: - Actions
     @IBAction func handleRefresh(_ sender: UIBarButtonItem) {
-        fetchWeatherData(locationName: "Moscow")
+        guard let currentLocationName = currentLocationName else {
+            fetchLocationName()
+            toogleActivityIndicatorStatus(isOn: true)
+            return
+        }
+        toogleActivityIndicatorStatus(isOn: true)
+        fetchWeatherData(locationName: currentLocationName)
+    }
+    
+    @IBAction func didTapSearchLocationButton(_ sender: Any) {
+        guard let location = searchLocationTextField.text, !location.isEmpty else { return }
+        
+        searchLocationTextField.text = ""
+        searchLocationTextField.resignFirstResponder()
+        fetchWeatherData(locationName: location)
+    }
+    
+    // MARK: - Setups
+    private func setupLocationManager() {
+        locationManager = LocationManager()
+        
+        locationManager?.didUpdateLocation = { [weak self] result in
+            switch result {
+            case .Succes(let locationName):
+                self?.fetchWeatherData(locationName: locationName)
+            case .Failure(let error):
+                print(error)
+            }
+        }
     }
     
     // MARK: - Fetches
     private func fetchLocationName() {
         toogleActivityIndicatorStatus(isOn: true)
-        
-        self.locationManager.fetchLocationName { [weak self] LocationResult in
-            switch LocationResult {
-            case .Succes(let locationName):
-                self?.fetchWeatherData(locationName: locationName)
-            case .Failure(let error as NSError):
-                print(error.localizedDescription)
-            }
-        }
+        self.locationManager?.fetchLocation()
     }
     
     private func fetchWeatherData(locationName: String) {
@@ -89,6 +119,15 @@ extension CurrentWeatherController {
         activityIndicator.color = Colors.white
     }
     
+    private func setupSearchLocationView() {
+        searchLocationTextField.delegate = self
+        
+        searchLocationTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 0))
+        searchLocationTextField.leftViewMode = .always
+        searchLocationTextField.placeholder = "Enter the city name"
+        searchLocationTextField.returnKeyType = .search
+    }
+    
     private func setupBacgroundGradientLayer() {
         bacgroundGradientLayer = CAGradientLayer()
         bacgroundGradientLayer.colors = [AssetsColor.darkBlue.cgColor, AssetsColor.mediumBlue.cgColor]
@@ -120,10 +159,24 @@ extension CurrentWeatherController {
         
         switch isOn {
         case true:
-            
             activityIndicator.startAnimating()
         case false:
             activityIndicator.stopAnimating()
         }
+    }
+}
+
+// MARK: - UITextFieldDelegate
+extension CurrentWeatherController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField == searchLocationTextField {
+            guard let location = searchLocationTextField.text, !location.isEmpty else { return false }
+            
+            searchLocationTextField.text = ""
+            searchLocationTextField.resignFirstResponder()
+            fetchWeatherData(locationName: location)
+            return true
+        }
+        return false
     }
 }
