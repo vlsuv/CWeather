@@ -54,7 +54,10 @@ final class WeatherAPIManager: APIManager {
 
 extension WeatherAPIManager {
     func JSONWeatherWith(locationName: String, completionHandler: @escaping (APIResult<CurrentWeather>) -> ()) {
-        let safeLocationName = locationName.replacingOccurrences(of: " ", with: "")
+        guard let safeLocationName = locationName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {
+            return
+        }
+        
         let request = ForecastType.Current(apiKey: self.apiKey, locationName: safeLocationName).request
         
         fetch(request: request, parse: { json -> CurrentWeather? in

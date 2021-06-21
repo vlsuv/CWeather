@@ -88,6 +88,10 @@ class CurrentWeatherController: UIViewController {
         fetchWeatherData(locationName: name)
     }
     
+    @IBAction func didTapCurrentLocationButton(_ sender: Any) {
+        fetchLocationName()
+    }
+    
     // MARK: - Setups
     private func setupLocationManager() {
         locationManager = LocationManager()

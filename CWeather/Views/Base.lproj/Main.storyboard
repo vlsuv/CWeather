@@ -105,12 +105,20 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" id="1nS-1i-C92">
-                        <barButtonItem key="leftBarButtonItem" title="Item" image="goforward" catalog="system" id="mvT-dD-mQi">
-                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <connections>
-                                <action selector="handleRefresh:" destination="BYZ-38-t0r" id="019-40-dsE"/>
-                            </connections>
-                        </barButtonItem>
+                        <leftBarButtonItems>
+                            <barButtonItem title="Item" image="goforward" catalog="system" id="mvT-dD-mQi">
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <connections>
+                                    <action selector="handleRefresh:" destination="BYZ-38-t0r" id="019-40-dsE"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem image="location.circle" catalog="system" id="clf-z0-3EB">
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <connections>
+                                    <action selector="didTapCurrentLocationButton:" destination="BYZ-38-t0r" id="fdq-wb-vgP"/>
+                                </connections>
+                            </barButtonItem>
+                        </leftBarButtonItems>
                         <rightBarButtonItems>
                             <barButtonItem title="Item" image="text.justify" catalog="system" id="HmL-EW-cQe">
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -193,6 +201,7 @@
     </scenes>
     <resources>
         <image name="goforward" catalog="system" width="121" height="128"/>
+        <image name="location.circle" catalog="system" width="128" height="121"/>
         <image name="magnifyingglass" catalog="system" width="128" height="115"/>
         <image name="text.justify" catalog="system" width="128" height="100"/>
     </resources>
