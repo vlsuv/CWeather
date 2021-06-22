@@ -16,4 +16,7 @@ enum Colors {
 enum AssetsColor {
     static let darkBlue = UIColor(named: "DarkBlue") ?? UIColor()
     static let mediumBlue = UIColor(named: "MediumBlue") ?? UIColor()
+    
+    static let darkGray = UIColor(named: "DarkGray") ?? UIColor()
+    static let mediumGray = UIColor(named: "MediumGray") ?? UIColor()
 }

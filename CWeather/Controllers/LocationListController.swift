@@ -12,8 +12,8 @@ import RealmSwift
 class LocationListController: UIViewController {
     
     // MARK: - Properties
-    @IBOutlet weak var tableView: UITableView!
-    
+    var tableView: UITableView?
+        
     private var realmManager: RealmManager?
     
     private var locations: Results<Location>?
@@ -25,19 +25,39 @@ class LocationListController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = Colors.white
         
+        configureNavigationController()
         configureTableView()
+        
         setupRealmManager()
+        
         getLocations()
     }
     
+    // MARK: - Targets
+    @objc private func didTapBackButton() {
+        navigationController?.popViewController(animated: true)
+    }
+    
     // MARK: - Handlers
+    private func configureNavigationController() {
+        let backButton = UIBarButtonItem(image: Images.back, style: .plain, target: self, action: #selector(didTapBackButton))
+        backButton.tintColor = Colors.black
+        
+        navigationItem.leftBarButtonItem = backButton
+    }
+    
     private func configureTableView() {
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView = UITableView()
         
-        tableView.dataSource = self
-        tableView.delegate = self
+        tableView?.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
-        tableView.tableFooterView = UIView()
+        tableView?.dataSource = self
+        tableView?.delegate = self
+        
+        tableView?.tableFooterView = UIView()
+        
+        view.addSubview(tableView!)
+        tableView?.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, right: view.rightAnchor, bottom: view.bottomAnchor)
     }
 }
 
@@ -50,7 +70,7 @@ extension LocationListController {
     private func getLocations() {
         realmManager?.getLocations(completionHandler: { [weak self] results in
             self?.locations = results
-            self?.tableView.reloadData()
+            self?.tableView?.reloadData()
         })
     }
 }
@@ -88,8 +108,7 @@ extension LocationListController: UITableViewDelegate {
             guard let location = locations?[indexPath.row] else { return }
             
             realmManager?.deleteLocation(location, completionHandler: { succes in
-                print("delete")
-                self.tableView.reloadData()
+                self.tableView?.reloadData()
             })
         }
     }

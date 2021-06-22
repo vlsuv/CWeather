@@ -9,25 +9,54 @@
 import UIKit
 
 struct CurrentWeather: Equatable, Codable {
-
     let locationName: String
     let description: String
     var icon: Image
     let temp: Double
     let feelsLike: Double
+    let humidity: Int
+    let minTemp: Double
+    let maxTemp: Double
+    let pressure: Int
+    let windSpeed: Double
+    let localDate: Date
 }
 
 extension CurrentWeather {
     init?(json: [String: Any]) {
-        guard let mainDictionary = json["main"] as? [String: AnyObject], let weatherDictionaries = json["weather"] as? [[String: AnyObject]], let firstWeatherDictionary = weatherDictionaries.first else { return nil }
+        guard let mainDictionary = json["main"] as? [String: AnyObject],
+            let weatherDictionaries = json["weather"] as? [[String: AnyObject]],
+            let firstWeatherDictionary = weatherDictionaries.first,
+            let windDictionary = json["wind"] as? [String: AnyObject] else {
+                return nil
+        }
         
-        let icon = WeatherImageManager(rawValue: firstWeatherDictionary["main"] as? String ?? "").icon
+        guard let iconName = firstWeatherDictionary["main"] as? String,
+            let locationName = json["name"] as? String,
+            let description = firstWeatherDictionary["description"] as? String,
+            let temp = mainDictionary["temp"] as? Double,
+            let feelsLike = mainDictionary["feels_like"] as? Double,
+            let humidity = mainDictionary["humidity"] as? Int,
+            let minTemp = mainDictionary["temp_min"] as? Double,
+            let maxTemp = mainDictionary["temp_max"] as? Double,
+            let pressure = mainDictionary["pressure"] as? Int,
+            let windSpeed = windDictionary["speed"] as? Double,
+            let timezone = json["timezone"] as? TimeInterval else {
+                return nil
+        }
+        let icon = WeatherImageManager(rawValue: iconName).icon
         
-        self.locationName = json["name"] as? String ?? ""
-        self.description = firstWeatherDictionary["description"] as? String ?? ""
+        self.locationName = locationName
+        self.description = description
         self.icon = Image(withImage: icon)
-        self.temp = mainDictionary["temp"] as? Double ?? 0.0
-        self.feelsLike = mainDictionary["feels_like"] as? Double ?? 0.0
+        self.temp = temp
+        self.feelsLike = feelsLike
+        self.humidity = humidity
+        self.minTemp = minTemp
+        self.maxTemp = maxTemp
+        self.pressure = pressure
+        self.windSpeed = windSpeed
+        self.localDate = Date(timeInterval: timezone, since: Date())
     }
 }
 
@@ -35,24 +64,30 @@ extension CurrentWeather {
     var tempString: String {
         return "\(temp)°"
     }
-    var feelsLikeString: String {
-        return "Feels like \(feelsLike)°"
+
+    var localDateString: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(identifier: "UTC")
+        dateFormatter.dateStyle = .none
+        dateFormatter.timeStyle = .short
+        return "Local time: \(dateFormatter.string(from: self.localDate))"
+    }
+    
+    var timeStatus: LocationTimeStatus {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+        let hour = calendar.component(.hour, from: localDate)
+        
+        switch hour {
+        case 6..<20:
+            return .Light
+        default:
+            return .Dark
+        }
     }
 }
 
-struct Image: Codable, Equatable {
-    let imageData: Data?
-    
-    init(withImage image: UIImage) {
-        self.imageData = image.pngData()
-    }
-    
-    func getImage() -> UIImage? {
-        guard let imageData = self.imageData else {
-            return nil
-        }
-        
-        let image = UIImage(data: imageData)
-        return image
-    }
+enum LocationTimeStatus {
+    case Light
+    case Dark
 }
