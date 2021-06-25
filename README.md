@@ -23,6 +23,4 @@
 - Unit Tests
 
 ## Screenshots
-<img src="Screenshots/current_weather_page_1.png" width="257" height="500">
-<img src="Screenshots/current_weather_page_2.png" width="257" height="500">
-<img src="Screenshots/location_list_page.png" width="257" height="500">
+<img src="Screenshots/current_weather_page_1.png" width="257" height="500"> <img src="Screenshots/current_weather_page_2.png" width="257" height="500"> <img src="Screenshots/location_list_page.png" width="257" height="500">
