@@ -27,6 +27,8 @@ class CurrentWeatherView: UIView {
         textField.leftViewMode = .always
         textField.placeholder = "Enter the city name"
         textField.returnKeyType = .search
+        textField.autocorrectionType = .no
+        textField.autocapitalizationType = .none
         return textField
     }()
     
@@ -89,7 +91,7 @@ class CurrentWeatherView: UIView {
     lazy var tempLabel: UILabel = {
         let label = UILabel()
         label.textColor = Colors.white
-        label.font = .systemFont(ofSize: 76, weight: .medium)
+        label.font = .systemFont(ofSize: 66, weight: .medium)
         label.textAlignment = .center
         return label
     }()
@@ -120,7 +122,7 @@ class CurrentWeatherView: UIView {
     var locationNameLabel: UILabel = {
         let label = UILabel()
         label.textColor = Colors.white
-        label.font = .systemFont(ofSize: 46, weight: .medium)
+        label.font = .systemFont(ofSize: 36, weight: .medium)
         return label
     }()
     
